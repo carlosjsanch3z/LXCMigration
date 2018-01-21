@@ -1,11 +1,10 @@
 [Unit]
 Description=Automate LXC Migration Service
-Wants=minute-timer.timer
 
 [Service]
 User=root
 Type=simple
-ExecStart=/bin/bash /usr/local/sbin/LXCMigration/Migration.sh
+ExecStart=/bin/bash /usr/local/sbin/Migration.sh
 
 [Install]
-WantedBy=minute-timer.target
+WantedBy=multi-user.target

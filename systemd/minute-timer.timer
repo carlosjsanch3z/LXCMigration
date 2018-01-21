@@ -3,7 +3,7 @@ Description=Automate LXC Migration Timer
 
 [Timer]
 OnCalendar=*:0/1
-Unit=minute-timer.target
+Persistent=true
 
 [Install]
-WantedBy=basic.target
+WantedBy=multi-user.target

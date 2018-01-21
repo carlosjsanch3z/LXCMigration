@@ -27,7 +27,6 @@ function program() {
   if [[ "$status" == "RUNNING" || "$1" == "contenedor1" ]]; then
     MemoryTest "$1"
   elif [[ "$status" == "RUNNING" || "$1" == "contenedor2" ]]; then
-    echo "TEST: $1"
     MemoryTest "$1"
   else
     echo "None of the containers is running"
