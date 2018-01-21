@@ -1,0 +1,7 @@
+[Unit]
+Description=Automate LXC Migration
+
+[Service]
+User=root
+Type=simple
+ExecStart=/bin/bash /usr/local/sbin/LXCMigration/Migration.sh
