@@ -9,65 +9,129 @@ containers=(contenedor1 contenedor2)
 status=''
 ip=''
 memory=''
-timeout=''
-
-
-lvname=''
-apachedir=''
+memorylimit=''
+containerplus='contenedor2'
+lvname='additional'
+apachedir='/var/www/html'
 
 
 # FUNCTIONS
 
-function AttachLV() {
-  :
+# Start the script
+function start() {
+  for c in "${containers[@]}"; do
+    program $c
+  done
 }
 
-function SetIptableRule() {
-  :
-}
-
-function MemoryTest() {
-  echo "Aqui se comprueba la memory: ${memory}"
-  if [[ "${memory}" -ge 30 ]]; then
-    echo "Supera el limite de RAM"
-  fi
-}
-
-function pp() {
+# Main Code
+function program() {
   GetStatus $1
-  if [[ "$status" == RUNNING ]]; then
-    #echo "${1} esta corriendo ..."
-    #echo "Toca obtener ip y memory de ${1}"
+  if [[ "$status" == "RUNNING" || "$1" == "contenedor1" ]]; then
     GetIP $1
     GetCurrentMemory $1
-    #echo "${ip} - Memory: ${memory}"
-    #echo "Volver a empezar"
-    sleep 1
-    MemoryTest $1
+    memorylimit='40'
+    MemoryTest "$1" "${memorylimit}"
   else
     #echo "El ${1} esta apagado."
     sleep 1
   fi
 }
 
-function GetCurrentMemory() {
-  memory=$(lxc-info -n $1 | grep 'Memory use' | tr -s " " | cut -d " " -f 3 | cut -d "." -f 1)
-}
-
-function GetIP() {
-  ip=$(lxc-info -n $1 | grep 'IP' | tr -s " " | cut -d " " -f 2)
-}
-
+# Check State of the Container
 function GetStatus() {
   status=$(lxc-info -n $1 | grep 'State' | tr -s " " | cut -d " " -f 2)
 }
-
-function start() {
-  for c in "${containers[@]}"; do
-    pp $c
-  done
-  start
+# Get Current IP LXC Container
+function GetIP() {
+  ip=$(lxc-info -n $1 | grep 'IP' | tr -s " " | cut -d " " -f 2)
+  CheckVarEmpty $ip
 }
+#Get Memory RAM Usage LXC Container
+function GetCurrentMemory() {
+  memory=$(lxc-info -n $1 | grep 'Memory use' | tr -s " " | cut -d " " -f 3 | cut -d "." -f 1)
+  CheckVarEmpty $memory
+}
+#Test Var Empty
+function CheckVarEmpty() {
+  if [[ -z "$1" ]]; then
+    echo "No se ha encontrado el valor de la variable"
+    exit 1
+  fi
+}
+# Memory TEST
+function MemoryTest() {
+  if [[ "${memory}" -ge "$2" ]]; then
+    echo "Start Migration"
+    HandleContainers "${containerplus}" "start"
+    Apachectl $1 "stop"
+    Deatachvol $1
+    CleanIPRule $1
+    HandleContainers $1 "stop"
+  fi
+}
+# Operation Containers
+function HandleContainers() {
+  case "$2" in
+      start) lxc-start -n $1 2> /dev/null
+      echo "Raising $1"
+      ;;
+      stop) lxc-stop -n $1 2> /dev/null
+      echo "Stopping $1"
+      ;;
+  esac
+}
+# Apache Control
+function Apachectl() {
+  case "$2" in
+      stop) lxc-attach -n $1 -- systemctl stop apache2 2> /dev/null
+      ;;
+      restart) lxc-attach -n $1 -- systemctl restart apache2
+      ;;
+  esac
+  ReturnCode "Systemctl Apache Failed"
+}
+#Catching Exceptions
+function ReturnCode() {
+  if [[ "$?" -ne "0" ]]; then
+    echo "${1}"
+    exit $?
+  fi
+}
+# Deatach LV
+function Deatachvol() {
+  lxc-attach -n $1 -- umount /dev/lvm-group/${lvname}
+  ReturnCode "LV not mounted"
+  lxc-device -n $1 del /dev/lvm-group/${lvname}
+}
+
+
+function CleanIPRule() {
+  :
+}
+function CleanVars() {
+  :
+}
+
+# Crear script q arranque el contenedor1 y añada el volumen servicio y añada las reglas ip tables
+# Desarrollar la funcion CleanIPRule
+# Desarrollar la funcion CleanVars
+# Montar escenario en container 2
+# Desarrollar condicion container 2
+# Crear script purgue el escenario
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 start
 ## START
