@@ -5,6 +5,3 @@ Description=Automate LXC Migration Service
 User=root
 Type=simple
 ExecStart=/bin/bash /usr/local/sbin/Migration.sh
-
-[Install]
-WantedBy=multi-user.target

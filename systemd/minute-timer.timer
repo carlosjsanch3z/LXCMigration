@@ -4,6 +4,4 @@ Description=Automate LXC Migration Timer
 [Timer]
 OnCalendar=*:0/1
 Persistent=true
-
-[Install]
-WantedBy=multi-user.target
+Unit=lxc-migration.service
