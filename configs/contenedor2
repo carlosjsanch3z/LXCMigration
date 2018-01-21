@@ -1,0 +1,17 @@
+lxc.network.type = veth
+lxc.network.link = lxcbr0
+lxc.network.flags = up
+lxc.network.hwaddr = 00:16:3e:6a:f3:ab
+lxc.rootfs = /dev/lvm-group/lv_add_cont1
+lxc.rootfs.backend = lvm
+
+# Common configuration
+lxc.include = /usr/share/lxc/config/debian.common.conf
+
+# Container specific configuration
+lxc.tty = 4
+lxc.utsname = contenedor1
+lxc.arch = amd64
+
+# Custom configuration
+lxc.cgroup.memory.limit_in_bytes = 1024M
