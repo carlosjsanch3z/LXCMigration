@@ -1,9 +1,9 @@
 [Unit]
-Description=Automate LXC Migration
+Description=Automate LXC Migration Timer
 
 [Timer]
-OnCalendar=*:*:0/60
-Persistent=true
+OnCalendar=*:0/1
+Unit=minute-timer.target
 
 [Install]
-WantedBy=timers.target
+WantedBy=basic.target
