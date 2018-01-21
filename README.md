@@ -25,14 +25,15 @@ Move systemd files to the path: /etc/systemd/system/
 Start timers:
 
 ~~~
-systemctl enable /etc/systemd/systemd/lxc.timer
-systemctl start /etc/systemd/systemd/lxc.timer
+systemctl enable minute-timer.timer
+systemctl enable lxc-migration.service
+systemctl start minute-timer.timer
 ~~~
 
 Monitoring:
 ~~~
-journalctl -f -u lxc.service
-journalctl -f -u lxc.timer
+journalctl -f -u lxc-migration.service
+journalctl -f -u minute-timer.timer
 ~~~
 
 View timer list:
